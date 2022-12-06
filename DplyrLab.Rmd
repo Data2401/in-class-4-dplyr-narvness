@@ -4,6 +4,10 @@ output: html_document
 ---
 ```{r}
 library(tidyverse)
+
+
+getwd()
+
 ```
 
 In the package `dplyr` there is a dataset called `starwars`. 
@@ -28,7 +32,10 @@ starwars %>% filter(species == "Human") %>% plot(mass ~ height, data = .)
 Now, change this to see the same plot for the Droids. 
 
 ```{r}
+droids <- starwars %>% filter(species == "Droid")
+plot(droids$height, droids$mass)
 
+starwars %>% filter(species == "Droid") %>% plot(mass ~ height, data = .)
 
 ```
 
@@ -36,6 +43,12 @@ Now, change this to see the same plot for the Droids.
 How many characters are from each planet?
 
 ```{r}
+characters <- starwars %>% 
+  count(homeworld)
+  
+
+
+characters
 
 
 
@@ -44,6 +57,14 @@ How many characters are from each planet?
 If you wanted to arrange this in descending order, what would you add to the pipe? 
 
 ```{r}
+characters <- starwars %>% 
+  count(homeworld) %>% 
+  arrange(desc(n))
+
+
+characters
+
+
 
 ```
 
@@ -51,6 +72,11 @@ Find the average height for each eye color.
 
 ```{r}
 
+aveg_height_eye_color <- starwars%>% 
+  group_by(eye_color) %>% 
+  summarize( `Avg Height` = mean(height))
+
+aveg_height_eye_color
 
 ```
 
@@ -58,12 +84,21 @@ What's with the NAs? Filter down to just brown eyes find out.
 
 
 ```{r}
+filter(starwars, eye_color == "brown")
+
 ```
 
 Okay, so we have missing data here. Try summarising with `na.omit(height)` instead of just `height` or adding `na.rm = T` to the mean function inside summarize. 
 
 
 ```{r}
+aveg_height_eye_color_omit <- starwars%>% 
+  group_by(eye_color) %>% 
+  summarize( `Avg Height` = mean(na.omit(height)))
+
+aveg_height_eye_color_omit
+
+
 
 
 ```
@@ -72,6 +107,29 @@ So, who is the tallest male? How many blue eyed women are there? How many gender
 
 
 ```{r}
+
+# 1 There are no max male heights
+max_male_height <- starwars%>% 
+  group_by(sex) %>% 
+  summarize( `Avg Height` = max(height))
+
+max_male_height
+
+# 2 There are 6 blue eyed women
+
+eye_color_women <-select(starwars, gender, eye_color) %>% 
+  filter(gender == "feminine") 
+
+
+blue_eyed_counting <- eye_color_women %>% 
+  count(eye_color) %>% 
+  arrange(desc(n))
+
+
+blue_eyed_counting
+
+# 3 There are 4 genders
+
 
 ```
 
